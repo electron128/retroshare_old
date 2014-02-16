@@ -85,7 +85,7 @@ win32 {
 	LIBS += -luuid -lole32 -liphlpapi -lcrypt32-cygwin
 	LIBS += -lole32 -lwinmm
 
-	PROTOCPATH=$$PWD/../../../lib/bin/
+        PROTOCPATH=D:/Retroshare_Dev/protoc_bin/
 
 	RC_FILE = resources/retroshare_win.rc
 
@@ -168,7 +168,7 @@ sshserver {
 	# Please use this path below.
         # (You can modify it locally if required - but dont commit it!)
 
-	LIBSSH_DIR = ../../../lib/libssh-0.5.4
+        LIBSSH_DIR = ../../../libssh-0.5.2
 
 	#
 	# Use the following commend to generate a Server RSA Key.
