@@ -151,8 +151,10 @@ DEPENDPATH += ../../libretroshare/src
 INCLUDEPATH += . ../../libretroshare/src
 
 # Input
-HEADERS +=  notifytxt.h 
-SOURCES +=  notifytxt.cc \
+HEADERS +=  notifytxt.h     \
+            mmi.h
+SOURCES +=  notifytxt.cc    \
+            mmi.cc          \
             retroshare.cc 
 
 introserver {
