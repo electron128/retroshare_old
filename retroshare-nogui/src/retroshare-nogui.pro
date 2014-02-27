@@ -170,7 +170,11 @@ sshserver {
 	# Please use this path below.
         # (You can modify it locally if required - but dont commit it!)
 
-        LIBSSH_DIR = ../../../libssh-0.5.2
+        win32 {
+            LIBSSH_DIR = ../../../libssh-0.5.2
+        } else {
+            LIBSSH_DIR = ../../../libssh-0.5.4
+        }
 
 	#
 	# Use the following commend to generate a Server RSA Key.
