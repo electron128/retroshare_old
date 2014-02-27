@@ -474,7 +474,7 @@ int executeMMICommand(const std::string& command, int argc, char** argv)
         "output : pgpId sslId\n"
         "\n"
         "command: import-pgp-key\n"
-        "input  : pathToKeyfile\n\n"
+        "input  : pathToKeyfile\n"
         "output : pgpId\n"
         "\n"
         "command: export-pgp-key\n"
@@ -486,7 +486,7 @@ int executeMMICommand(const std::string& command, int argc, char** argv)
         "output : sshPasswordHash\n"
         "\n"
         "command: generate-ssh-key\n"
-        "input  : pathToKeyfile\n\n"
+        "input  : pathToKeyfile\n"
         "output : -\n"
         << std::endl;
 
