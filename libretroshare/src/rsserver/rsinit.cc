@@ -143,6 +143,8 @@ class RsInitConfig
                 static bool udpListenerOnly;
 
                 static std::string RetroShareLink;
+
+                static std::string pluginCommandlineParams;
 };
 
 
@@ -175,6 +177,7 @@ std::string RsInitConfig::gxs_passwd;
 bool RsInitConfig::autoLogin;  		/* autoLogin allowed */
 bool RsInitConfig::startMinimised; /* Icon or Full Window */
 std::string RsInitConfig::RetroShareLink;
+std::string pluginCommandlineParams;
 
 /* Directories */
 std::string RsInitConfig::basedir;
@@ -416,6 +419,7 @@ int RsInit::InitRetroShare(int argcIgnored, char **argvIgnored, bool strictCheck
 			   >> parameter('c',"base-dir"      ,RsInitConfig::basedir        ,"directory", "Set base directory."                      ,false)
 			   >> parameter('U',"user-id"       ,prefUserString               ,"ID", "[User Name/GPG id/SSL id] Sets Account to Use, Useful when Autologin is enabled",false)
 			   >> parameter('r',"link"          ,RsInitConfig::RetroShareLink ,"retroshare://...", "Use a given Retroshare Link"              ,false)
+			   >> parameter( 0 ,"pluginparams"  ,RsInitConfig::pluginCommandlineParams,"a string which gets passed to all plugins"            ,false)
 #ifdef LOCALNET_TESTING
 			   >> parameter('R',"restrict-port" ,portRestrictions             ,"port1-port2","Apply port restriction"                   ,false)
 #endif
@@ -2194,6 +2198,8 @@ int RsServer::StartupRetroShare()
 	// 	programatically_inserted_plugins.push_back(myCoolPlugin) ;
 	//
 	mPluginsManager->loadPlugins(programatically_inserted_plugins) ;
+	
+	mPluginsManager->setPluginParams(RsInitConfig::pluginCommandlineParams);
 
 	/* create Services */
 	ad = new p3disc(mPeerMgr, mLinkMgr, mNetMgr, pqih);

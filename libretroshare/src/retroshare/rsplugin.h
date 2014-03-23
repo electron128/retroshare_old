@@ -108,6 +108,16 @@ class RsPlugin
 {
 	public:
 		//
+		//============================== Commandlien Parameters ======================//
+		//
+		// Implement this method, to receive comandline arguments
+		// Retroshare takes a string for the parameter --pluginparams "string"
+		// "string" gets passed to all plugins, so its best to have a string like this:
+		// plugin_a:key=value;plugin_b:key=value
+		// This method gets called before setInterfaces(), but after setPlugInHandler().
+		virtual setParams(std::string params){ return;}
+		
+		//
 		//================================ Services ==================================//
 		//
 		// Cache service. Use this for providing cache-based services, such as channels, forums.

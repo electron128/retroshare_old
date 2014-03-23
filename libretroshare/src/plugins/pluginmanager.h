@@ -95,6 +95,7 @@ class RsPluginManager: public RsPluginHandler, public p3Config
 
 		void stopPlugins();
 
+		void setPluginParams(std::string params);
 		void registerCacheServices() ;
 		void registerClientServices(p3ServiceServer *pqih) ;
 
