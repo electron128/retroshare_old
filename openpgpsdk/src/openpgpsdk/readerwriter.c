@@ -35,7 +35,19 @@
 
 #include "parse_local.h"
 
-#ifdef WIN32
+#if defined(__ANDROID__)
+// obviously getpass does not make any sense on Android,
+// but we need it because the code wants it this way
+// _getch() causes undefined reference on Android, so just empty body here
+char *getpass (const char *prompt){
+    static char getpassbuf [1];
+    getpassbuf[0] = '\0';
+    return getpassbuf;
+}
+
+#endif
+
+#if defined(WIN32)
 #include <conio.h>
 #include <stdio.h>
 

@@ -27,7 +27,13 @@
 // Includes for directory creation.
 #include <sys/types.h>
 #include <sys/stat.h>
+
+#ifdef __ANDROID__
+#include <fcntl.h>
+#else
 #include <sys/fcntl.h>
+#endif
+
 #include <unistd.h>
 
 #include "util/rsdir.h"
@@ -51,6 +57,10 @@
 #include <winioctl.h>
 #else
 #include <errno.h>
+#endif
+
+#ifdef __ANDROID__
+#include "util/android_files64.h"
 #endif
 
 /****

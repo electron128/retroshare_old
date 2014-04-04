@@ -39,6 +39,11 @@
 #include "util/rsdebug.h"
 #include "util/rsstring.h"
 #include <iomanip>
+
+#ifdef __ANDROID__
+#include "util/if_nameindex.h"
+#endif
+
 static const int pqinetzone = 96184;
 
 /*****
@@ -149,7 +154,12 @@ std::string socket_errorType(int err)
 
 bool getLocalInterfaces(struct in_addr &/*routeAddr*/, std::list<struct in_addr> &addrs)
 {
-	int sock = 0;
+#ifdef __ANDROID__
+#warning getLocalInterfaces is disabled on Android
+    // TODO: fix this
+    return false;
+#else
+    int sock = 0;
 	struct ifreq ifreq;
 
 	struct if_nameindex *iflist = if_nameindex();
@@ -214,6 +224,7 @@ bool getLocalInterfaces(struct in_addr &/*routeAddr*/, std::list<struct in_addr>
 
 	if_freenameindex(iflist);
 	return (addrs.size() > 0);
+#endif
 }
 
 /********************************** WINDOWS/UNIX SPECIFIC PART ******************/
@@ -692,6 +703,11 @@ bool 	getPreferredInterface(in_addr &routeAddr, struct in_addr &prefAddr) // ret
 
 bool    sameNet(const struct in_addr *addr, const struct in_addr *addr2)
 {
+#ifdef __ANDROID__
+#warning sameNet is disabled on Android
+    // TODO
+    return false;
+#else
 #ifdef NET_DEBUG
 	std::cerr << "sameNet: " << rs_inet_ntoa(*addr);
 	std::cerr << " VS " << rs_inet_ntoa(*addr2);
@@ -718,6 +734,7 @@ bool    sameNet(const struct in_addr *addr, const struct in_addr *addr2)
 	}
 
 	return (inet_netof(*addr) == inet_netof(*addr2));
+#endif /* __ANDROID__ */
 }
 
 

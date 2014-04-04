@@ -33,9 +33,13 @@
 #include "rsdiscspace.h"
 #include <util/rsthreads.h>
 #ifndef WIN32
-#include <sys/statvfs.h>
+#   ifdef __ANDROID__
+#       include <sys/vfs.h>
+#   else
+#       include <sys/statvfs.h>
+#   endif
 #else
-#include <wtypes.h>
+#   include <wtypes.h>
 #endif
 
 #define DELAY_BETWEEN_CHECKS 2 
@@ -88,7 +92,7 @@ bool RsDiscSpace::crossSystemDiskStats(const char *file, uint64_t& free_blocks, 
 	free_blocks = dwFreeClusters ;
 	block_size = dwSectorPerCluster * dwBytesPerSector ;
 #else
-#ifdef __APPLE__
+#if defined(__APPLE__)
 	struct statvfs buf;
 	
 	if (0 != statvfs (file, &buf))
@@ -100,6 +104,26 @@ bool RsDiscSpace::crossSystemDiskStats(const char *file, uint64_t& free_blocks, 
 	
 	free_blocks = buf.f_bavail;
 	block_size = buf.f_frsize ;
+
+#elif defined(__ANDROID__)
+    /* Manpage says:
+     *
+     *   LSB has deprecated the library calls statfs() and fstatfs() and tells
+     *   us to use statvfs(2) and fstatvfs(2) instead.
+     *
+     *   Android does not have statvfs, so we have touse statfs instead
+     */
+    struct statfs buf;
+
+    if (0 != statfs (file, &buf))
+    {
+        std::cerr << "Size estimate failed for file " << file << std::endl ;
+        return false;
+    }
+
+    free_blocks = buf.f_bavail;
+    block_size = buf.f_frsize ;
+
 #else
 	struct statvfs64 buf;
 	

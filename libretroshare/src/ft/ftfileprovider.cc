@@ -10,6 +10,10 @@
 #include <stdio.h>
 #include <time.h>
 
+#ifdef __ANDROID__
+#include "util/android_files64.h"
+#endif
+
 /********
 * #define DEBUG_FT_FILE_PROVIDER 1
 * #define DEBUG_TRANSFERS	 1 // TO GET TIMESTAMPS of DATA READING 

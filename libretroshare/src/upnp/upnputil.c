@@ -31,21 +31,42 @@ void DisplayInfos(struct UPNPUrls * urls,
 	char lastconnerror[64];
 	unsigned int uptime;
 	unsigned int brUp, brDown;
+#if (MINIUPNPC_API_VERSION == 10)
+    UPNP_GetConnectionTypeInfo(urls->controlURL,
+                               data->first.servicetype,
+                               connectionType);
+#else
 	UPNP_GetConnectionTypeInfo(urls->controlURL,
 	                           data->servicetype,
 							   connectionType);
+#endif
 	if(connectionType[0])
 		printf("Connection Type : %s\n", connectionType);
 	else
 		printf("GetConnectionTypeInfo failed.\n");
+#if (MINIUPNPC_API_VERSION == 10)
+    UPNP_GetStatusInfo(urls->controlURL, data->first.servicetype, status, &uptime, lastconnerror);
+#else
 	UPNP_GetStatusInfo(urls->controlURL, data->servicetype, status, &uptime, lastconnerror);
+#endif
 	printf("Status : %s, uptime=%u LastConnError %s\n", status, uptime, lastconnerror);
+#if (MINIUPNPC_API_VERSION == 10)
+    UPNP_GetLinkLayerMaxBitRates(urls->controlURL_CIF, data->CIF.servicetype,
+            &brDown, &brUp);
+#else
 	UPNP_GetLinkLayerMaxBitRates(urls->controlURL_CIF, data->servicetype_CIF,
 			&brDown, &brUp);
+#endif
 	printf("MaxBitRateDown : %u bps   MaxBitRateUp %u bps\n", brDown, brUp);
+#if (MINIUPNPC_API_VERSION == 10)
+    UPNP_GetExternalIPAddress(urls->controlURL,
+                              data->first.servicetype,
+                              externalIPAddress);
+#else
 	UPNP_GetExternalIPAddress(urls->controlURL,
 	                          data->servicetype,
 							  externalIPAddress);
+#endif
 	if(externalIPAddress[0])
 		printf("ExternalIPAddress = %s\n", externalIPAddress);
 	else
@@ -57,10 +78,17 @@ void GetConnectionStatus(struct UPNPUrls * urls,
 {
 	unsigned int bytessent, bytesreceived, packetsreceived, packetssent;
 	DisplayInfos(urls, data);
+#if (MINIUPNPC_API_VERSION == 10)
+    bytessent = UPNP_GetTotalBytesSent(urls->controlURL_CIF, data->CIF.servicetype);
+    bytesreceived = UPNP_GetTotalBytesReceived(urls->controlURL_CIF, data->CIF.servicetype);
+    packetssent = UPNP_GetTotalPacketsSent(urls->controlURL_CIF, data->CIF.servicetype);
+    packetsreceived = UPNP_GetTotalPacketsReceived(urls->controlURL_CIF, data->CIF.servicetype);
+#else
 	bytessent = UPNP_GetTotalBytesSent(urls->controlURL_CIF, data->servicetype_CIF);
 	bytesreceived = UPNP_GetTotalBytesReceived(urls->controlURL_CIF, data->servicetype_CIF);
 	packetssent = UPNP_GetTotalPacketsSent(urls->controlURL_CIF, data->servicetype_CIF);
 	packetsreceived = UPNP_GetTotalPacketsReceived(urls->controlURL_CIF, data->servicetype_CIF);
+#endif
 	printf("Bytes:   Sent: %8u\tRecv: %8u\n", bytessent, bytesreceived);
 	printf("Packets: Sent: %8u\tRecv: %8u\n", packetssent, packetsreceived);
 }
@@ -87,11 +115,19 @@ void ListRedirections(struct UPNPUrls * urls,
 		rHost[0] = '\0'; enabled[0] = '\0';
 		duration[0] = '\0'; desc[0] = '\0';
 		extPort[0] = '\0'; intPort[0] = '\0'; intClient[0] = '\0';
+#if (MINIUPNPC_API_VERSION == 10)
+        r = UPNP_GetGenericPortMappingEntry(urls->controlURL, data->first.servicetype,
+                                       index,
+                                       extPort, intClient, intPort,
+                                       protocol, desc, enabled,
+                                       rHost, duration);
+#else
 		r = UPNP_GetGenericPortMappingEntry(urls->controlURL, data->servicetype,
 		                               index,
 		                               extPort, intClient, intPort,
 									   protocol, desc, enabled,
 									   rHost, duration);
+#endif
 		if(r==0)
 			printf("%02d - %s %s->%s:%s\tenabled=%s leaseDuration=%s\n"
 			       "     desc='%s' rHost='%s'\n",
@@ -132,15 +168,24 @@ int SetRedirectAndTest(struct UPNPUrls * urls,
 		fprintf(stderr, "invalid protocol\n");
 		return 0;
 	}
-	
+
+#if (MINIUPNPC_API_VERSION == 10)
+    UPNP_GetExternalIPAddress(urls->controlURL,
+                              data->first.servicetype,
+                              externalIPAddress);
+#else
 	UPNP_GetExternalIPAddress(urls->controlURL,
 	                          data->servicetype,
 							  externalIPAddress);
+#endif
 	if(externalIPAddress[0])
 		printf("ExternalIPAddress = %s\n", externalIPAddress);
 	else
 		printf("GetExternalIPAddress failed.\n");
-
+#if (MINIUPNPC_API_VERSION == 10)
+    r = UPNP_AddPortMapping(urls->controlURL, data->first.servicetype,
+                            eport, iport, iaddr, 0, proto, NULL, NULL);
+#else
 // Unix at the moment!	
 #if MINIUPNPC_VERSION >= 13
         /* Starting from miniupnpc version 1.2, lease duration parameter is gone */
@@ -157,6 +202,7 @@ int SetRedirectAndTest(struct UPNPUrls * urls,
                                 eport, iport, iaddr,0, 0, proto);
    #endif
 #endif
+#endif
 
 //	r = UPNP_AddPortMapping(urls->controlURL, data->servicetype,
 //	                        eport, iport, iaddr, 0, leaseDuration, proto);
@@ -171,11 +217,20 @@ int SetRedirectAndTest(struct UPNPUrls * urls,
 		//should check IP address then!
 		//ok = 0;
 	}
-
-	UPNP_GetSpecificPortMappingEntry(urls->controlURL,
-	                                 data->servicetype,
+#if (MINIUPNPC_API_VERSION == 10)
+    // disabled because f api changes in 1.9
+#warning miniupnpc is broken
+    ok = 0;
+    /*UPNP_GetSpecificPortMappingEntry(urls->controlURL,
+                                     data->first.servicetype,
     	                             eport, proto,
-									 intClient, intPort);
+                                     intClient, intPort);*/
+#else
+    UPNP_GetSpecificPortMappingEntry(urls->controlURL,
+                                     data->servicetype,
+                                     eport, proto,
+                                     intClient, intPort);
+#endif
 	if(intClient[0])
 		printf("InternalIP:Port = %s:%s\n", intClient, intPort);
 	else
@@ -231,11 +286,22 @@ int TestRedirect(struct UPNPUrls * urls,
 		fprintf(stderr, "invalid protocol\n");
 		return 0;
 	}
-	
+
+#if (MINIUPNPC_API_VERSION == 10)
+    // disabled because f api changes in 1.9
+#warning miniupnpc is broken
+    ok = 0;
+    /*UPNP_GetSpecificPortMappingEntry(urls->controlURL,
+                                     data->first.servicetype,
+                                     eport, proto,
+                     intClient, intPort);*/
+#else
 	UPNP_GetSpecificPortMappingEntry(urls->controlURL,
 	                                 data->servicetype,
     	                             eport, proto,
 					 intClient, intPort);
+#endif
+
 	if(intClient[0])
 		printf("uPnP Check: InternalIP:Port = %s:%s\n", intClient, intPort);
 	else
@@ -278,10 +344,14 @@ RemoveRedirect(struct UPNPUrls * urls,
 		fprintf(stderr, "protocol invalid\n");
 		return 0;
 	}
+#if (MINIUPNPC_API_VERSION == 10)
+    UPNP_DeletePortMapping(urls->controlURL, data->first.servicetype, eport, proto, NULL);
+#else
 #if MINIUPNPC_VERSION >= 13
 	UPNP_DeletePortMapping(urls->controlURL, data->servicetype, eport, proto, NULL);
 #else
 	UPNP_DeletePortMapping(urls->controlURL, data->servicetype, eport, proto);
+#endif
 #endif
 
 	return 1;

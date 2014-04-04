@@ -154,18 +154,38 @@ win32 {
 	PRE_TARGETDEPS *= ../../libretroshare/src/lib/libretroshare.a
 	PRE_TARGETDEPS *= ../../openpgpsdk/src/lib/libops.a
 
-	LIBS += ../../libretroshare/src/lib/libretroshare.a
-	LIBS += ../../openpgpsdk/src/lib/libops.a -lbz2
-	LIBS += -L"$$PWD/../../../lib"
+        #LIBS += ../../libretroshare/src/lib/libretroshare.a
+        #LIBS += ../../openpgpsdk/src/lib/libops.a -lbz2
+        #LIBS += -L"$$PWD/../../../lib"
+
+        SUPPORTLIBS_DIR = ../../supportlibs
+        include($${SUPPORTLIBS_DIR}/supportlibs.pri)
+
+        LIBS += ../../libretroshare/src/lib/libretroshare.a
+        #LIBS += ../../openpgpsdk/src/lib/libops.a -lbz2
+        LIBS += ../../openpgpsdk/src/lib/libops.a
+        LIBS += $${SUPPORTLIBS_DIR}/$${BZIP_LIBRARY}
+        LIBS += $${SUPPORTLIBS_DIR}/$${SSL_LIBRARY}
+        LIBS += $${SUPPORTLIBS_DIR}/$${CRYPTO_LIBRARY}
+        #LIBS += ../../../../lib/libpthread.a
+        LIBS += -lpthread
+        LIBS += $${SUPPORTLIBS_DIR}/$${UPNPC_LIBRARY} -lws2_32   #miniupnpc needs libws2_32
+        LIBS += $${SUPPORTLIBS_DIR}/$${ZLIB_LIBRARY}
+        #LIBS += -L"$$PWD/../../../lib"
 
 	gxs {
 		LIBS += ../../supportlibs/pegmarkdown/lib/libpegmarkdown.a
 		LIBS += -lsqlcipher
 	}
 
-	LIBS += -lssl -lcrypto -lpthread -lminiupnpc -lz
+        #LIBS += -lssl -lcrypto -lpthread -lminiupnpc -lz
 # added after bitdht
 #	LIBS += -lws2_32
+
+        # files like crypt32-cygwin.a are in development/lib directory
+        # so add this directory to libs serach path
+        LIBS += -L"$$PWD/../../../lib"
+
 	LIBS += -luuid -lole32 -liphlpapi -lcrypt32-cygwin -lgdi32
 	LIBS += -lole32 -lwinmm
 	RC_FILE = gui/images/retroshare_win.rc
@@ -252,6 +272,35 @@ openbsd-* {
 	LIBS *= -rdynamic
 }
 
+##################################### Android ######################################
+
+android-g++ {
+        PRE_TARGETDEPS *= ../../libretroshare/src/lib/libretroshare.a
+        PRE_TARGETDEPS *= ../../openpgpsdk/src/lib/libops.a
+
+        SUPPORTLIBS_DIR = ../../supportlibs
+        include($${SUPPORTLIBS_DIR}/supportlibs.pri)
+
+        LIBS += ../../libretroshare/src/lib/libretroshare.a
+
+        LIBS += ../../openpgpsdk/src/lib/libops.a
+        LIBS += $${SUPPORTLIBS_DIR}/$${BZIP_LIBRARY}
+
+        LIBS += $${SUPPORTLIBS_DIR}/$${SSL_LIBRARY}
+        LIBS += $${SUPPORTLIBS_DIR}/$${CRYPTO_LIBRARY}
+
+        # pthread is included in android library
+        #LIBS += -lpthread
+        LIBS += $${SUPPORTLIBS_DIR}/$${UPNPC_LIBRARY}
+        LIBS += $${SUPPORTLIBS_DIR}/$${ZLIB_LIBRARY}
+
+#TODO: (this was at the end of this file, and should moved there later)
+#ANDROID_PACKAGE_SOURCE_DIR = $$PWD/retroshare-v0.5.5/retroshare-gui/src/android
+
+#OTHER_FILES += \
+#    android/AndroidManifest.xml
+
+}
 
 
 ############################## Common stuff ######################################

@@ -1,0 +1,11 @@
+--- miniupnpc-1.9/miniwget.c
++++ miniupnpc-1.9/miniwget.c
+@@ -6,6 +6,8 @@
+  * This software is subject to the conditions detailed in the
+  * LICENCE file provided in this distribution. */
+ 
++#define MIN(x,y) (((x)<(y))?(x):(y))
++
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>

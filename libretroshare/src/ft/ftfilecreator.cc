@@ -11,6 +11,10 @@
 #include <util/rsdiscspace.h>
 #include <util/rsdir.h>
 
+#ifdef __ANDROID__
+#include "util/android_files64.h"
+#endif
+
 /*******
  * #define FILE_DEBUG 1
  ******/

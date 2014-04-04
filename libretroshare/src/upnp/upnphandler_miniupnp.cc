@@ -30,12 +30,16 @@ bool upnphandler::initUPnPState()
 {
 	/* allocate memory */
 	uPnPConfigData *upcd = new uPnPConfigData;
-
+#if (MINIUPNPC_API_VERSION == 10)
+    int error = 0;
+    upcd->devlist = upnpDiscover(2000, NULL, NULL, 0, 0, &error);
+#else
 #if MINIUPNPC_VERSION >= 11
 	/* Starting from version 1.1, miniupnpc api has a new parameter (int sameport) */
 	upcd->devlist = upnpDiscover(2000, NULL, NULL, 0);
 #else
 	upcd->devlist = upnpDiscover(2000, NULL, NULL);
+#endif
 #endif
 
 	if(upcd->devlist)
@@ -322,10 +326,15 @@ bool upnphandler::start_upnp()
 
 	/* now store the external address */
 	char externalIPAddress[32];
+#if (MINIUPNPC_API_VERSION == 10)
+    UPNP_GetExternalIPAddress(config -> urls.controlURL,
+                  config->data.first.servicetype,
+                  externalIPAddress);
+#else
 	UPNP_GetExternalIPAddress(config -> urls.controlURL,
 				  config->data.servicetype,
 				  externalIPAddress);
-
+#endif
 	sockaddr_clear(&upnp_eaddr);
 
 	if(externalIPAddress[0])

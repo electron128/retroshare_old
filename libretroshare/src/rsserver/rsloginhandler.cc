@@ -113,6 +113,23 @@ bool RsLoginHandler::getSSLPassword(const std::string& ssl_id,bool enable_gpg_as
 	return getSSLPasswdFromGPGFile(ssl_id,ssl_passwd) ;
 }
 
+#ifdef __ANDROID__
+
+#warning AutoLogin is disabled on Android
+bool RsLoginHandler::tryAutoLogin(const std::string& ssl_id,std::string& ssl_passwd){
+    return false;
+}
+
+bool RsLoginHandler::enableAutoLogin(const std::string& ssl_id,const std::string& ssl_passwd){
+    return false;
+}
+
+bool RsLoginHandler::clearAutoLogin(const std::string& ssl_id){
+    return false;
+}
+
+#else // not Android
+
 bool RsLoginHandler::tryAutoLogin(const std::string& ssl_id,std::string& ssl_passwd)
 {
 	std::cerr << "RsTryAutoLogin()" << std::endl;
@@ -620,7 +637,7 @@ bool RsLoginHandler::clearAutoLogin(const std::string& ssl_id)
   #endif
 #endif
 }
-
+#endif /* __ANDROID__ */
 bool RsLoginHandler::checkAndStoreSSLPasswdIntoGPGFile(const std::string& ssl_id,const std::string& ssl_passwd)
 {
 	// We want to pursue login with gpg passwd. Let's do it:

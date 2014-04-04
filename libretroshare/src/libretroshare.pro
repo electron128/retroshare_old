@@ -131,7 +131,7 @@ PUBLIC_HEADERS =	retroshare/rsblogs.h \
 
 HEADERS += plugins/pluginmanager.h \
 		plugins/dlfcn_win32.h \
-		serialiser/rspluginitems.h
+                serialiser/rspluginitems.h
 
 HEADERS += $$PUBLIC_HEADERS
 
@@ -230,7 +230,8 @@ win32 {
 	OBJECTS_DIR = temp/obj
 	MOC_DIR = temp/moc
 	DEFINES *= WINDOWS_SYS WIN32 STATICLIB MINGW WIN32_LEAN_AND_MEAN _USE_32BIT_TIME_T
-	DEFINES *= MINIUPNPC_VERSION=13
+        # MINIUPNPC_VERSION is already defined as "1.9"
+        #DEFINES *= MINIUPNPC_VERSION=13
 	# This defines the platform to be WinXP or later and is needed for getaddrinfo (_WIN32_WINNT_WINXP)
 	DEFINES *= WINVER=0x0501
 	DESTDIR = lib
@@ -253,13 +254,20 @@ win32 {
 
 	CONFIG += upnp_miniupnpc
 
-	UPNPC_DIR = ../../../miniupnpc-1.3
+        #UPNPC_DIR = ../../../miniupnpc-1.3
 
-	ZLIB_DIR = ../../../zlib-1.2.3
-	SSL_DIR = ../../../openssl-1.0.1c
+        #ZLIB_DIR = ../../../zlib-1.2.3
+        #SSL_DIR = ../../../openssl-1.0.1c
 	OPENPGPSDK_DIR = ../../openpgpsdk/src
 
-	INCLUDEPATH += . $${SSL_DIR}/include $${UPNPC_DIR} $${ZLIB_DIR} $${OPENPGPSDK_DIR}
+        #INCLUDEPATH += . $${SSL_DIR}/include $${UPNPC_DIR} $${ZLIB_DIR} $${OPENPGPSDK_DIR}
+        SUPPORTLIBS_DIR = ../../supportlibs
+        include($${SUPPORTLIBS_DIR}/supportlibs.pri)
+
+        INCLUDEPATH +=  $${SUPPORTLIBS_DIR}/$${SSL_INCLUDE_DIR}    \
+                        $${SUPPORTLIBS_DIR}/$${ZLIB_INCLUDE_DIR}   \
+                        $${SUPPORTLIBS_DIR}/$${UPNPC_INCLUDE_DIR}  \
+                        $${OPENPGPSDK_DIR}
 
 	# SQLite include path is required to compile GXS.
 	gxs {
@@ -329,6 +337,36 @@ openbsd-* {
 	CONFIG += upnp_libupnp
 
 	DESTDIR = lib
+}
+
+################################# Android ##########################################
+
+android-g++ {
+
+        HEADERS += util/android_files64.h
+
+# openbsd above has this line:
+# 	QMAKE_CXXFLAGS *= -Dfseeko64=fseeko -Dftello64=ftello -Dstat64=stat -Dstatvfs64=statvfs -Dfopen64=fopen
+# maybe this could be used for Android???
+
+        # TODO:
+        # if_nameindex is missing
+        # inet_netof is missing
+        # autologin
+        #HEADERS += util/if_nameindex.h
+        #SOURCES += util/if_nameindex.cc
+
+        DESTDIR = lib
+        CONFIG += upnp_miniupnpc
+        OPENPGPSDK_DIR = ../../openpgpsdk/src
+
+        SUPPORTLIBS_DIR = ../../supportlibs
+        include($${SUPPORTLIBS_DIR}/supportlibs.pri)
+
+        INCLUDEPATH +=  $${SUPPORTLIBS_DIR}/$${SSL_INCLUDE_DIR}    \
+                        $${SUPPORTLIBS_DIR}/$${ZLIB_INCLUDE_DIR}   \
+                        $${SUPPORTLIBS_DIR}/$${UPNPC_INCLUDE_DIR}  \
+                        $${OPENPGPSDK_DIR}
 }
 
 ################################### COMMON stuff ##################################
@@ -476,7 +514,7 @@ SOURCES +=	dbase/cachestrapper.cc \
 			dbase/fimonitor.cc \
 			dbase/findex.cc \
 			dbase/fistore.cc \
-			dbase/rsexpr.cc
+                        dbase/rsexpr.cc
 
 
 SOURCES +=	ft/ftchunkmap.cc \

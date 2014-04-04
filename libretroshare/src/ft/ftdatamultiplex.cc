@@ -38,6 +38,10 @@
 #include <retroshare/rsturtle.h>
 #include <time.h>
 
+#ifdef __ANDROID__
+#include "util/android_files64.h"
+#endif
+
 /* For Thread Behaviour */
 const uint32_t DMULTIPLEX_MIN	= 10; /* 1ms sleep */
 const uint32_t DMULTIPLEX_MAX   = 1000; /* 1 sec sleep */

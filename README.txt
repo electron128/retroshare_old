@@ -1,3 +1,29 @@
+This Branch compiles Retroshare for Android with QtCreator 3.0.0 and QT 5.2.0
+
+It runs, but does not go further than the create new Identity Dialog.
+
+How to compile:
+------------------
+- install Qt, QtCreator, Java, Android NDK
+- check if you can compile a example project with Qt for Android
+
+	git clone this_repo
+	git checkout this_branch
+	cd supportlibs
+	# download sources of all the required libraries
+	./get-supportlibs
+
+- open RetroShare.pro with QtCreator
+- click compile
+
+Todo:
+- make ui for small screens
+- check the list of missing functions in libretroshare.pro and find solutions
+- ...
+
+Original Readme below
+----------------------
+
 To compile:
 
 	- install the package dependencies. On ubuntu:
