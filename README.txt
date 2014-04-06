@@ -1,3 +1,10 @@
+the branch v0.5.5-arkos is made for ArkOS
+see arkos-retroshare-plugin for details:
+https://github.com/electron128/arkos-retroshare-plugin
+
+it contains a patch to allow to set the port for RsWebUI from the commandline.
+
+it also includes v0.5.5-mmi:
 the branch v0.5.5-mmi adds the following to retroshare-nogui:
 
   mmi: machine-machine-interface
