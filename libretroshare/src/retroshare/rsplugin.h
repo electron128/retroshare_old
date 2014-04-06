@@ -115,7 +115,7 @@ class RsPlugin
 		// "string" gets passed to all plugins, so its best to have a string like this:
 		// plugin_a:key=value;plugin_b:key=value
 		// This method gets called before setInterfaces(), but after setPlugInHandler().
-		virtual setParams(std::string params){ return;}
+		virtual void setParams(std::string params){ return;}
 		
 		//
 		//================================ Services ==================================//

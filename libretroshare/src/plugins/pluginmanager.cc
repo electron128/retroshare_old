@@ -393,7 +393,7 @@ void RsPluginManager::slowTickPlugins(time_t seconds)
 
 void RsPluginManager::setPluginParams(std::string params)
 {
-	std::cerr << "  Sending commandline params to plugins." << std::endl;
+	std::cerr << "Sending commandline params to plugins:" << params << std::endl;
 
 	for(uint32_t i=0;i<_plugins.size();++i)
 		if(_plugins[i].plugin != NULL)

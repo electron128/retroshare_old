@@ -1,6 +1,7 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-		LinksCloud \
-		VOIP \
-		FeedReader
+		#LinksCloud \
+		#VOIP \
+		#FeedReader \
+		WebUI

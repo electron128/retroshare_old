@@ -177,7 +177,7 @@ std::string RsInitConfig::gxs_passwd;
 bool RsInitConfig::autoLogin;  		/* autoLogin allowed */
 bool RsInitConfig::startMinimised; /* Icon or Full Window */
 std::string RsInitConfig::RetroShareLink;
-std::string pluginCommandlineParams;
+std::string RsInitConfig::pluginCommandlineParams;
 
 /* Directories */
 std::string RsInitConfig::basedir;
@@ -419,11 +419,14 @@ int RsInit::InitRetroShare(int argcIgnored, char **argvIgnored, bool strictCheck
 			   >> parameter('c',"base-dir"      ,RsInitConfig::basedir        ,"directory", "Set base directory."                      ,false)
 			   >> parameter('U',"user-id"       ,prefUserString               ,"ID", "[User Name/GPG id/SSL id] Sets Account to Use, Useful when Autologin is enabled",false)
 			   >> parameter('r',"link"          ,RsInitConfig::RetroShareLink ,"retroshare://...", "Use a given Retroshare Link"              ,false)
-			   >> parameter( 0 ,"pluginparams"  ,RsInitConfig::pluginCommandlineParams,"a string which gets passed to all plugins"            ,false)
+			   >> parameter( 0 ,"pluginparams"  ,RsInitConfig::pluginCommandlineParams, "String","This string gets passed to all plugins"            ,false)
 #ifdef LOCALNET_TESTING
 			   >> parameter('R',"restrict-port" ,portRestrictions             ,"port1-port2","Apply port restriction"                   ,false)
 #endif
 				>> help() ;
+				
+				std::cerr << "Argstream Error log:" << std::endl << as.errorLog() << std::endl;
+				std::cerr << "pluginparams: \"" << RsInitConfig::pluginCommandlineParams << "\"" << std::endl;
 
 			as.defaultErrorHandling(true) ;
 
@@ -2171,6 +2174,12 @@ int RsServer::StartupRetroShare()
 	// possible entries include: /usr/lib/retroshare, ~/.retroshare/extensions/, etc.
 #endif
 
+	std::cerr << "rsinit.cc:startupretroshare() before loading plugins RsInitConfig::pluginCommandlineParams=\""<<RsInitConfig::pluginCommandlineParams<<"\""<<std::endl;
+	// make a backup of RsInitConfig::pluginCommandlineParams
+	// because dlopen in pluginmanager will clear thsi var
+	// i have no idea why
+	std::string pluginparams = RsInitConfig::pluginCommandlineParams;
+
 	mPluginsManager = new RsPluginManager(RsInitConfig::main_executable_hash) ;
 	rsPlugins  = mPluginsManager ;
 	mConfigMgr->addConfiguration("plugins.cfg", mPluginsManager);
@@ -2199,7 +2208,8 @@ int RsServer::StartupRetroShare()
 	//
 	mPluginsManager->loadPlugins(programatically_inserted_plugins) ;
 	
-	mPluginsManager->setPluginParams(RsInitConfig::pluginCommandlineParams);
+	std::cerr << "rsinit.cc:startupretroshare() after loading plugins RsInitConfig::pluginCommandlineParams=\""<<RsInitConfig::pluginCommandlineParams<<"\""<<std::endl;
+	mPluginsManager->setPluginParams(pluginparams);
 
 	/* create Services */
 	ad = new p3disc(mPeerMgr, mLinkMgr, mNetMgr, pqih);
