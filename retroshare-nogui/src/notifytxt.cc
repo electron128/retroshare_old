@@ -90,23 +90,45 @@ bool NotifyTxt::askForPluginConfirmation(const std::string& plugin_file_name, co
 	std::cerr << "   Hash: " << plugin_file_hash << std::endl;
 	std::cerr << "   File: " << plugin_file_name << std::endl;
 
-	char a = 0 ;
+    /*char a = 0 ;
 	while(a != 'y' && a != 'n')
 	{
 		std::cerr << "Enable this plugin ? (y/n) :" ;
 		std::cerr.flush() ;
 
 		a = fgetc(stdin) ;
-	}
-	return a == 'y' ;
+    }
+    return a == 'y' ;*/
+
+#warning Allowing all Plugins
+    return true;
 }
 
 bool NotifyTxt::askForPassword(const std::string& question, bool prev_is_bad, std::string& password)
 {
-	char *passwd = getpass(question.c_str()) ;
+    /*char *passwd = getpass(question.c_str()) ;
 	password = passwd;
 
-	return !password.empty();
+    return !password.empty();*/
+    /*
+#warning Using hardcoded Password
+    password = "password";*/
+
+#warning Using modified askForPassword()
+    // avoid to read from stdin a second time
+    // we can only read one time to not get blocked
+    // because only data for one read is available
+    static bool allowed = true;
+    if(allowed){
+        std::cerr<<"NotifyTxt::askForPassword(): waiting for Password"<<std::endl;
+        allowed  = false;
+        std::cin>>password;
+        std::cerr<<"NotifyTxt::askForPassword(): got Password:\""<<password<<"\""<<std::endl;
+        return true;
+    }else{
+        std::cerr<<"NotifyTxt::askForPassword(): not allowed"<<std::endl;
+        return false;
+    }
 }
 
 

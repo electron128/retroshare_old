@@ -1,3 +1,31 @@
+the branch v0.5.5-mmi adds the following to retroshare-nogui:
+
+  mmi: machine-machine-interface
+
+  provides functions to
+  - list accounts (pgpid, sslid, name, location)
+  - create new identity/location
+  - import pgp-key
+  - export pgp-key
+  - create ssh-passwordhash
+  - create ssh-key
+ 
+hack for password handling:
+read password from stdin, try this only one time
+
+The goal is to enable account managment from webinterfaces/without gui.
+  
+view the help:
+
+retroshare-nogui --mmi help
+
+
+
+
+
+Original Retroshare readme below
+--------------------------------
+
 To compile:
 
 	- install the package dependencies. On ubuntu:

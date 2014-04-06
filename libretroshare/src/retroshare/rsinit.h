@@ -113,6 +113,11 @@ class RsInit
 		 */
 		static bool	LoadPassword(const std::string& id, const std::string& passwd) ;
 
+        /*!
+         * save the ssl password to disk
+         */
+        static bool SavePassword();
+
 		/*!
 		 * Final Certificate load. This can be called if:
 		 * a) InitRetroshare() returns RS_INIT_HAVE_ACCOUNT -> autoLoad/password Set.
