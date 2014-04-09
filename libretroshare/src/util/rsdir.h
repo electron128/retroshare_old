@@ -105,8 +105,9 @@ Sha1CheckSum sha1sum(uint8_t *data,uint32_t size) ;
 // returns:
 // 	0: Success
 // 	1: Another instance already has the lock
-//    2 : Unexpected error
-int createLockFile(const std::string& lock_file_path, rs_lock_handle_t& lock_handle) ;
+//  2: Unexpected error
+//  lockOwner: returns the pid of the other instance (unix only)
+int createLockFile(const std::string& lock_file_path, rs_lock_handle_t& lock_handle, pid_t &lockOwner) ;
 
 // Removes the lock file with specified handle.
 void releaseLockFile(rs_lock_handle_t lockHandle) ;

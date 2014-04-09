@@ -3,6 +3,7 @@ TARGET = retroshare-nogui
 CONFIG += bitdht
 #CONFIG += introserver
 CONFIG += sshserver
+CONFIG += daemon
 CONFIG -= qt xml gui
 
 # if you are linking against the libretroshare with gxs.
@@ -324,6 +325,18 @@ protorpc {
 		INCLUDEPATH += . $${PROTOPATH}/src
 	}
 }
+
+daemon{
+	DEFINES *= ENABLE_DAEMON
+	
+	HEADERS += 	daemon/daemonsfile.h	\
+				daemon/cJSON.h
+	
+	SOURCES +=	daemon/daemonsfile.cc	\
+				daemon/cJSON.h
+}
+
+
 win32 {
 # must be added after ssh
 	LIBS += -lcrypto -lws2_32 -lgdi32

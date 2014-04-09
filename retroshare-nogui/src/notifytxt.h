@@ -35,7 +35,7 @@
 class NotifyTxt: public NotifyClient
 {
 	public:
-		NotifyTxt():mNotifyMtx("NotifyMtx") { return; }
+    NotifyTxt():mNotifyMtx("NotifyMtx"), silentMode(false) { return; }
 		virtual ~NotifyTxt() { return; }
 
 		virtual void notifyListChange(int list, int type);
@@ -56,6 +56,9 @@ class NotifyTxt: public NotifyClient
 		// will drop others.
 		int collectSearchResults(uint32_t searchId);
 		int clearSearchId(uint32_t searchId);
+
+        // set to true to disable all user questions
+        bool silentMode;
 
 
 	private:

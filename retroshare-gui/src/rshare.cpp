@@ -619,7 +619,8 @@ bool Rshare::loadCertificate(const std::string &accountId, bool autoLogin, std::
 	}
 
 	std::string lockFile;
-	int retVal = RsInit::LockAndLoadCertificates(autoLogin, lockFile);
+    pid_t runningInstancePid;
+    int retVal = RsInit::LockAndLoadCertificates(autoLogin, lockFile, runningInstancePid);
 	switch (retVal) {
 		case 0:	break;
 		case 1:	QMessageBox::warning(	0,

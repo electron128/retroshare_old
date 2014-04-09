@@ -45,6 +45,7 @@
 #include <list>
 #include <map>
 #include <vector>
+#include <sys/types.h>
 
 /*!
  * Initialisation Class (not publicly disclosed to RsIFace)
@@ -58,7 +59,16 @@ class RsInit
 		 * PreLogin
 		 * Call before init retroshare, initialises rsinitconfig's public attributes
 		 */
-		static void	InitRsConfig() ;
+        static void	InitRsConfig();
+        /*!
+         * give a hint which account to use
+         * call this function before InitRetroShare()
+         * @param str pgp-name, pgp-id oder ssl-id
+         */
+        static void setPreferedUserString(std::string str);
+
+        /*! call this function after InitRetroshare() */
+        static std::string getSSLPassword();
 
 		/*!
 		 * Should be called to load up ssl cert and private key, and intialises gpg
@@ -121,7 +131,7 @@ class RsInit
 		 * This wrapper is used to lock the profile first before
 		 * finalising the login
 		 */
-		static int 	LockAndLoadCertificates(bool autoLoginNT, std::string& lockFilePath);
+        static int 	LockAndLoadCertificates(bool autoLoginNT, std::string& lockFilePath, pid_t &runningInstancePid);
 
 		/*!
 		 * Post Login Options
@@ -160,7 +170,7 @@ class RsInit
 		static bool RsTryAutoLogin() ;
 
 		/* Lock/unlock profile directory */
-                static int	LockConfigDirectory(const std::string& accountDir, std::string& lockFilePath);
+                static int	LockConfigDirectory(const std::string& accountDir, std::string& lockFilePath, pid_t &runningInstancePid);
 		static void	UnlockConfigDirectory();
 
 		/* The true LoadCertificates() method */

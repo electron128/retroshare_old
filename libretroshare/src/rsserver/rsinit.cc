@@ -101,6 +101,7 @@ class RsInitConfig
 #endif
 
 		static std::list<accountId> accountIds;
+        static std::string preferedUserString; // hint to find the right preferedId
 		static std::string preferedId;
 
 		/* for certificate creation */
@@ -159,6 +160,7 @@ static const std::string configHelpName = "retro.htm";
 static const int SSLPWD_LEN = 64;
 
 std::list<accountId> RsInitConfig::accountIds;
+std::string RsInitConfig::preferedUserString;
 std::string RsInitConfig::preferedId;
 std::string RsInitConfig::main_executable_hash;
 
@@ -298,6 +300,15 @@ void RsInit::InitRsConfig()
 	//setZoneLevel(PQL_DEBUG_BASIC, 25915); // fltkserver
 	//setZoneLevel(PQL_DEBUG_BASIC, 47659); // fldxsrvr
 	//setZoneLevel(PQL_DEBUG_BASIC, 49787); // pqissllistener
+}
+
+void RsInit::setPreferedUserString(std::string str){
+    RsInitConfig::preferedUserString = str;
+}
+std::string RsInit::getSSLPassword(){
+    std::string passwd;
+    RsLoginHandler::getSSLPassword(RsInitConfig::preferedId,true,passwd);
+    return passwd;
 }
 
 /********
@@ -591,7 +602,9 @@ int RsInit::InitRetroShare(int argcIgnored, char **argvIgnored, bool strictCheck
 		return RS_INIT_NO_KEYRING ;
 
 	// if a different user id has been passed to cmd line check for that instead
-
+    if(prefUserString == ""){
+        prefUserString = RsInitConfig::preferedUserString;
+    }
 	std::string lower_case_user_string;
 	stringToLowerCase(prefUserString, lower_case_user_string) ;
 	std::string upper_case_user_string;
@@ -1182,12 +1195,12 @@ int      RsInit::GetPGPLoginDetails(const std::string& id, std::string &name, st
  * 1 : Another instance already has the lock
  * 2 : Unexpected error
  */
-int RsInit::LockConfigDirectory(const std::string& accountDir, std::string& lockFilePath)
+int RsInit::LockConfigDirectory(const std::string& accountDir, std::string& lockFilePath, pid_t &runningInstancePid)
 {
 	const std::string lockFile = accountDir + "/" + "lock";
 	lockFilePath = lockFile;
 
-	return RsDirUtil::createLockFile(lockFile,RsInitConfig::lockHandle) ;
+    return RsDirUtil::createLockFile(lockFile,RsInitConfig::lockHandle,runningInstancePid) ;
 }
 
 /*
@@ -1480,9 +1493,9 @@ bool     RsInit::LoadPassword(const std::string& id, const std::string& inPwd)
  * 2 : unexpected error while locking
  * 3 : unexpected error while loading certificates
  */
-int 	RsInit::LockAndLoadCertificates(bool autoLoginNT, std::string& lockFilePath)
+int 	RsInit::LockAndLoadCertificates(bool autoLoginNT, std::string& lockFilePath, pid_t &runningInstancePid)
 {
-	int retVal = LockConfigDirectory(RsInitConfig::configDir, lockFilePath);
+    int retVal = LockConfigDirectory(RsInitConfig::configDir, lockFilePath, runningInstancePid);
 	if(retVal != 0)
 		return retVal;
 
@@ -1535,7 +1548,7 @@ int RsInit::LoadCertificates(bool autoLoginNT)
 
 	std::cerr << "RsInitConfig::load_key.c_str() : " << RsInitConfig::load_key.c_str() << std::endl;
 
-	if(0 == AuthSSL::getAuthSSL() -> InitAuth(RsInitConfig::load_cert.c_str(), RsInitConfig::load_key.c_str(), RsInitConfig::passwd.c_str()))
+    if(0 >= AuthSSL::getAuthSSL() -> InitAuth(RsInitConfig::load_cert.c_str(), RsInitConfig::load_key.c_str(), RsInitConfig::passwd.c_str()))
 	{
 		std::cerr << "SSL Auth Failed!";
 		return 0 ;

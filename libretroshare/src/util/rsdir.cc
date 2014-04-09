@@ -1022,48 +1022,62 @@ std::string RsDirUtil::makePath(const std::string &path1, const std::string &pat
 	return path;
 }
 
-int RsDirUtil::createLockFile(const std::string& lock_file_path, rs_lock_handle_t &lock_handle)
+int RsDirUtil::createLockFile(const std::string& lock_file_path, rs_lock_handle_t &lock_handle, pid_t &lockOwner)
 {
 	/******************************** WINDOWS/UNIX SPECIFIC PART ******************/
 #ifndef WINDOWS_SYS
-//	Suspended. The user should make sure he's not already using the file descriptor.
-//	if(lock_handle != -1)
-//		close(lock_handle);
+    //	Suspended. The user should make sure he's not already using the file descriptor.
+    //	if(lock_handle != -1)
+    //		close(lock_handle);
 
-	// open the file in write mode, create it if necessary, truncate it (it should be empty)
-	lock_handle = open(lock_file_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+    // open the file in write mode, create it if necessary, truncate it (it should be empty)
+    lock_handle = open(lock_file_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 
-	if(lock_handle == -1)
-	{
-		std::cerr << "Could not open lock file " << lock_file_path.c_str() << std::flush;
-		perror(NULL);
-		return 2;
-	}
+    if(lock_handle == -1)
+    {
+        std::cerr << "Could not open lock file " << lock_file_path.c_str() << std::flush;
+        perror(NULL);
+        return 2;
+    }
 
-	// see "man fcntl" for the details, in short: non blocking lock creation on the whole file contents
-	struct flock lockDetails;
-	lockDetails.l_type = F_WRLCK;
-	lockDetails.l_whence = SEEK_SET;
-	lockDetails.l_start = 0;
-	lockDetails.l_len = 0;
+    // see "man fcntl" for the details, in short: non blocking lock creation on the whole file contents
+    struct flock lockDetails;
+    lockDetails.l_type = F_WRLCK;
+    lockDetails.l_whence = SEEK_SET;
+    lockDetails.l_start = 0;
+    lockDetails.l_len = 0;
 
-	if(fcntl(lock_handle, F_SETLK, &lockDetails) == -1)
-	{
-		int fcntlErr = errno;
-		std::cerr << "Could not request lock on file " << lock_file_path.c_str() << std::flush;
-		perror(NULL);
+    if(fcntl(lock_handle, F_SETLK, &lockDetails) == -1)
+    {
+        int fcntlErr = errno;
+        std::cerr << "Could not request lock on file " << lock_file_path.c_str() << std::flush;
+        perror(NULL);
 
-		// there's no lock so let's release the file handle immediately
-		close(lock_handle);
-		lock_handle = -1;
+        int retVal;
+        if(fcntlErr == EACCES || fcntlErr == EAGAIN)
+        {
+            // get pid of running instance
+            if(fcntl(lock_handle, F_GETLK, &lockDetails) == -1){
+                retVal = 2;
+            } else {
+                lockOwner = lockDetails.l_pid;
+                std::cerr << "Process with pid " << lockOwner << " has lock on " << lock_file_path.c_str() << std::flush;
+                retVal = 1;
+            }
+        }
+        else
+        {
+            retVal = 2;
+        }
 
-		if(fcntlErr == EACCES || fcntlErr == EAGAIN)
-			return 1;
-		else
-			return 2;
-	}
+        // there's no lock so let's release the file handle immediately
+        close(lock_handle);
+        lock_handle = -1;
 
-	return 0;
+        return retVal;
+    }
+
+    return 0;
 #else
 //	Suspended. The user should make sure he's not already using the file descriptor.
 //
@@ -1117,7 +1131,8 @@ void RsDirUtil::releaseLockFile(rs_lock_handle_t lockHandle)
 
 RsStackFileLock::RsStackFileLock(const std::string& file_path)
 {
-	while(RsDirUtil::createLockFile(file_path,_file_handle))
+    pid_t pid;
+    while(RsDirUtil::createLockFile(file_path,_file_handle,pid))
 	{
 		std::cerr << "Cannot acquire file lock " << file_path << ", waiting 1 sec." << std::endl;
 #ifdef WINDOWS_SYS

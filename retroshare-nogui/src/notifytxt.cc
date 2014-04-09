@@ -90,6 +90,11 @@ bool NotifyTxt::askForPluginConfirmation(const std::string& plugin_file_name, co
 	std::cerr << "   Hash: " << plugin_file_hash << std::endl;
 	std::cerr << "   File: " << plugin_file_name << std::endl;
 
+    if(silentMode){
+        std::cerr << "no user available: plugin disabled" << std::endl;
+        return false;
+    }
+
 	char a = 0 ;
 	while(a != 'y' && a != 'n')
 	{
@@ -103,6 +108,10 @@ bool NotifyTxt::askForPluginConfirmation(const std::string& plugin_file_name, co
 
 bool NotifyTxt::askForPassword(const std::string& question, bool prev_is_bad, std::string& password)
 {
+    if(silentMode){
+        std::cerr << "askForPassword: no user to ask for Password available" << std::endl;
+        return false;
+    }
 	char *passwd = getpass(question.c_str()) ;
 	password = passwd;
 
