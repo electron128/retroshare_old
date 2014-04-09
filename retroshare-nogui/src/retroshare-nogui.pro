@@ -333,7 +333,7 @@ daemon{
 				daemon/cJSON.h
 	
 	SOURCES +=	daemon/daemonsfile.cc	\
-				daemon/cJSON.h
+				daemon/cJSON.c
 }
 
 
