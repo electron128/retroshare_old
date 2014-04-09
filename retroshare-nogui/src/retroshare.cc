@@ -62,6 +62,9 @@
 // don't know what to do about this.
 //  see http://wiki.openssl.org/index.php/Random_fork-safety
 //
+// the ssl-password is stored in a file
+// better make sure this file is readable by the owner only
+//
 // maybe a problem: hardcoded /.retroshare everywhere
 //                  would be better if retroshare basedir would come from a single variable
 // maybe catch the sigterm signal and shutdown rs like the gui does
