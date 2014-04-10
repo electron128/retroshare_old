@@ -1,4 +1,4 @@
-SSL_DIR = openssl/openssl-1.0.1f
+SSL_DIR = openssl/openssl-1.0.1g
 SSL_INCLUDE_DIR = $$SSL_DIR/include
 SSL_LIBRARY = openssl/lib/libssl.a
 CRYPTO_LIBRARY = openssl/lib/libcrypto.a

@@ -5,7 +5,7 @@ CONFIG -= qt
 TARGET = crypto
 DESTDIR = lib
 
-OPENSSL_DIR = openssl-1.0.1f
+OPENSSL_DIR = openssl-1.0.1g
 
 DEFINES *= NO_WINDOWS_BRAINDEATH
 

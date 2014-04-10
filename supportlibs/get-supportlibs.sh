@@ -18,12 +18,12 @@ wget http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz
 tar xvf bzip2-1.0.6.tar.gz
 
 cd $TOP_DIR/openssl
-wget http://www.openssl.org/source/openssl-1.0.1f.tar.gz
+wget http://www.openssl.org/source/openssl-1.0.1g.tar.gz
 # trouble with symlinks
 # cygwin: does not work
 # 7zip: does not work
 # mingw works!!!
-tar xvf openssl-1.0.1f.tar.gz
+tar xvf openssl-1.0.1g.tar.gz
 
 cd $TOP_DIR/zlib
 wget http://zlib.net/zlib-1.2.8.tar.gz

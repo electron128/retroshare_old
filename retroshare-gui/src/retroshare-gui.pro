@@ -184,9 +184,11 @@ win32 {
 
         # files like crypt32-cygwin.a are in development/lib directory
         # so add this directory to libs serach path
-        LIBS += -L"$$PWD/../../../lib"
+        #LIBS += -L"$$PWD/../../../lib"
 
-	LIBS += -luuid -lole32 -liphlpapi -lcrypt32-cygwin -lgdi32
+        #LIBS += -luuid -lole32 -liphlpapi -lcrypt32-cygwin -lgdi32
+        # this works: using crypt32 instead of crypt32-cygwin, then we don't need the files in the lib directory
+        LIBS += -luuid -lole32 -liphlpapi -lcrypt32 -lgdi32
 	LIBS += -lole32 -lwinmm
 	RC_FILE = gui/images/retroshare_win.rc
 
